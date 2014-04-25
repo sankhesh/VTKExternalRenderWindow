@@ -392,10 +392,12 @@ XVisualInfo *vtkExtOpenGLRenderWindow::GetDesiredVisualInfo()
 
 vtkExtOpenGLRenderWindow::vtkExtOpenGLRenderWindow()
 {
-    this->SetSize(400, 400);
+  //this->SetSize(400, 400);
   this->ParentId = static_cast<Window>(NULL);
-  this->ScreenSize[0] = 400;
-  this->ScreenSize[1] = 400;
+  this->ScreenSize[0] = 0;
+  this->ScreenSize[1] = 0;
+    this->Size[0] = 400;
+    this->Size[1] = 400;
   this->OwnDisplay = 0;
   this->CursorHidden = 0;
   this->ForceMakeCurrent = 0;
