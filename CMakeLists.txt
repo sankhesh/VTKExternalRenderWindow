@@ -11,7 +11,7 @@ include_directories(
   ${GLUT_INCLUDE_DIRS}
   )
 
-add_executable(glutWindow main.cpp vtkExtOpenGLRenderWindow.cxx)
+add_executable(glutWindow main.cpp)
 target_link_libraries(glutWindow
   ${OPENGL_LIBRARIES}
   ${GLUT_LIBRARY}
