@@ -1,5 +1,10 @@
 // OpenGL includes
-#include <GL/glut.h>
+#if defined(__APPLE__)
+# include <GLUT/glut.h> // Include OpenGL API.
+#else
+# include "vtkWindows.h" // Needed to include OpenGL header on Windows.
+# include <GL/glut.h> // Include OpenGL API.
+#endif
 
 // STD includes
 #include <iostream>
