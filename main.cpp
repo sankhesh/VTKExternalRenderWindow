@@ -21,6 +21,7 @@
 #include <vtkOBJReader.h>
 #include <vtkCallbackCommand.h>
 #include <vtkCommand.h>
+#include <vtkLight.h>
 
 #include <vtkNew.h>
 
@@ -36,7 +37,10 @@ static void MakeCurrentCallback(vtkObject* caller,
                                 void * clientData,
                                 void * callData)
 {
-  glutSetWindow(windowId);
+  if (initilaized)
+    {
+    glutSetWindow(windowId);
+    }
 }
 
 /* Handler for window-repaint event. Call back when the window first appears and
@@ -56,13 +60,25 @@ void display()
                          callback.GetPointer());
      externalVTKWidget->SetRenderWindow(renWin.GetPointer());
      vtkNew<vtkCubeSource> ss;
-     ss->SetCenter(-0.5,0.5,0);
+//     ss->SetCenter(-0.5,0.5,0);
      mapper->SetInputConnection(ss->GetOutputPort());
      externalVTKWidget->GetRenderer()->ResetCamera();
-     externalVTKWidget->GetRenderer()->PreserveColorBufferOff();
+     //externalVTKWidget->GetRenderer()->PreserveColorBufferOff();
      //externalVTKWidget->GetRenderer()->PreserveDepthBufferOff();
      actor->RotateX(45.0);
+     actor->RotateY(45.0);
      initilaized = true;
+
+     vtkNew<vtkLight> light;
+     light->SetLightTypeToSceneLight();
+     light->SetPosition(0, 0, 1);
+     light->SetPositional(true);
+     light->SetFocalPoint(0, 0, 0);
+     light->SetDiffuseColor(1, 0, 0);
+     light->SetAmbientColor(0, 1, 0);
+     light->SetSpecularColor(0, 0, 1);
+     externalVTKWidget->GetRenderWindow()->Render();
+     externalVTKWidget->GetRenderer()->AddLight(light.GetPointer());
      }
 
    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set background color to black and opaque
@@ -85,21 +101,27 @@ void display()
 void handleResize(int w, int h)
 {
   externalVTKWidget->GetRenderWindow()->SetSize(w, h);
+  externalVTKWidget->GetRenderWindow()->Render();
+}
+
+void onexit(void)
+{
+  initilaized = false;
 }
 
 /* Main function: GLUT runs as a console application starting at main()  */
 int main(int argc, char** argv) {
 //   objReader->SetFileName(argv[1]);
    glutInit(&argc, argv);                 // Initialize GLUT
-   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
    glutInitWindowSize(400,400);   // Set the window's initial width & height
    glutInitWindowPosition(400, 200); // Position the window's initial top-left corner
    windowId = glutCreateWindow("OpenGL Setup Test"); // Create a window with the given title
    glutDisplayFunc(display); // Register display callback handler for window re-paint
    glutReshapeFunc(handleResize); // Register resize callback handler for window resize
-   glEnable(GL_DEPTH_TEST);
    glDepthMask(GL_TRUE);
    glDepthFunc(GL_LEQUAL);
+   atexit(onexit);
    glutMainLoop();           // Enter the infinitely event-processing loop
    return 0;
 }
