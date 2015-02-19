@@ -53,6 +53,7 @@ void display()
      vtkNew<vtkActor> actor;
      actor->SetMapper(mapper.GetPointer());
      vtkRenderer* ren = externalVTKWidget->AddRenderer();
+     ren->AutomaticLightCreationOff();
      ren->AddActor(actor.GetPointer());
      renWin->SetSize(400,400);
      vtkNew<vtkCallbackCommand> callback;
@@ -61,27 +62,27 @@ void display()
                          callback.GetPointer());
      externalVTKWidget->SetRenderWindow(renWin.GetPointer());
      vtkNew<vtkCubeSource> ss;
-     //ss->SetCenter(-0.5,0.5,0.5);
+     //ss->SetCenter(-0.9,0.5,0.5);
      mapper->SetInputConnection(ss->GetOutputPort());
      ren->ResetCamera();
      //externalVTKWidget->GetRenderer()->PreserveColorBufferOff();
      //externalVTKWidget->GetRenderer()->PreserveDepthBufferOff();
-     actor->RotateX(45.0);
-     actor->RotateY(45.0);
+     //actor->RotateX(45.0);
+     //actor->RotateY(45.0);
      initilaized = true;
 
-     vtkNew<vtkLight> light;
-     light->SetLightTypeToSceneLight();
-     light->SetPosition(0, 0, 1);
-     light->SetConeAngle(25.0);
-     light->SetPositional(true);
-     light->SetFocalPoint(0, 0, 0);
-     light->SetDiffuseColor(1, 0, 0);
-     light->SetAmbientColor(0, 1, 0);
-     light->SetSpecularColor(0, 0, 1);
-     externalVTKWidget->GetRenderWindow()->Render();
-     // Make sure light is added after first render call
-     ren->AddLight(light.GetPointer());
+/*     vtkNew<vtkLight> light;*/
+     //light->SetLightTypeToSceneLight();
+     //light->SetPosition(0, 0, 1);
+     //light->SetConeAngle(25.0);
+     //light->SetPositional(true);
+     //light->SetFocalPoint(0, 0, 0);
+     //light->SetDiffuseColor(1, 0, 0);
+     //light->SetAmbientColor(0, 1, 0);
+     //light->SetSpecularColor(0, 0, 1);
+     //externalVTKWidget->GetRenderWindow()->Render();
+     ////Make sure light is added after first render call
+     /*ren->AddLight(light.GetPointer());*/
      }
 
    glEnable(GL_DEPTH_TEST);
@@ -90,16 +91,28 @@ void display()
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the color buffer
 
    glFlush();  // Render now
-//   glBegin(GL_TRIANGLES);
-//     glVertex3f(-0.5,-0.5,0.0);
-//     glVertex3f(0.5,-0.5,0.0);
-//     glVertex3f(0.5,0.5,0.0);
-//   glEnd();
+   glBegin(GL_TRIANGLES);
+     glVertex3f(-0.5,-0.5,0.0);
+     glVertex3f(0.5,-0.5,0.0);
+     glVertex3f(0.5,0.5,0.0);
+   glEnd();
 
+   glEnable(GL_LIGHTING);
+   glEnable(GL_LIGHT0);
+   GLfloat lightpos[] = {-0.5f, 1.0f, 1.0f, 1.0f};
+   glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+   GLfloat diffuse[] = {0.0f, 0.8f, 0.8f, 1.0f};
+   glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+   GLfloat specular[] = {0.5f, 0.0f, 0.0f, 1.0f};
+   glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+   GLfloat ambient[] = {1.0f, 1.0f, 0.2f,  1.0f};
+   glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
    externalVTKWidget->GetRenderWindow()->Render();
 
   /* Display the result */
   glutSwapBuffers();
+  //glDisable(GL_LIGHT0);
+  //glDisable(GL_LIGHTING);
 }
 
 void handleResize(int w, int h)
